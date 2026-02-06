@@ -1,0 +1,27 @@
+{
+    "name": "nk77",
+    "version": "1.0.0",
+    "description": "NK77 banknote acceptor driver with FreeRTOS, noise protection and auto-calibration",
+    "keywords": [
+        "nk77",
+        "banknote",
+        "esp32",
+        "freertos",
+        "pulse"
+    ],
+    "authors": [
+        {
+            "name": "Your Name",
+            "maintainer": true
+        }
+    ],
+    "frameworks": [
+        "arduino"
+    ],
+    "platforms": [
+        "espressif32"
+    ],
+    "headers": [
+        "nk77.h"
+    ]
+}
