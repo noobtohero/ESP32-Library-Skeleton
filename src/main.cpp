@@ -14,18 +14,23 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD I2C address
 // ##### User Settings #####
 // ===========================================================
 #define minPerBaht 2      // config by dip switch on NK77
-#define multiplyBill true // true = รับบิลได้หลายใบต่อเนื่อง, false = รับบิลได้ทีละใบ
+#define multiplyBill true // true = à¸£à¸±à¸šà¸šà¸´à¸¥à¹„à¸”à¹‰à¸«à¸¥à¸²à¸¢à¹ƒà¸šà¸•à¹ˆà¸­à¹€à¸™à¸·à¹ˆà¸­à¸‡, false = à¸£à¸±à¸šà¸šà¸´à¸¥à¹„à¸”à¹‰à¸—à¸µà¸¥à¹ƒà¸š
 #define MACHINE_NAME "  WIWA MASSAGE  "
 #define VERSION "2.0.0"
 #define MASSAGE_MODE 2
 
+// ===========================================================
+// ##### Time Constants #####
+// ===========================================================
 static const TickType_t ONE_SEC_TICKS = pdMS_TO_TICKS(1000);
 static const uint32_t START_COUNTDOWN_SEC = 10;
 static const uint32_t MACHINE_START_SEC = 40U * 60U;
 static const uint32_t MACHINE_ADD_THRESHOLD_SEC = 30U * 60U;
 static const uint32_t MACHINE_ADD_SEC = 10U * 60U;
 
-// state machine
+// ===========================================================
+// ##### State Machine #####
+// ===========================================================
 enum STATE
 {
     RESET,
@@ -37,7 +42,7 @@ enum STATE
 static STATE currentState;
 
 // --- massage time management ---
-static portMUX_TYPE massageMux = portMUX_INITIALIZER_UNLOCKED; // เขียนอ่านข้าม core
+static portMUX_TYPE massageMux = portMUX_INITIALIZER_UNLOCKED; // à¹€à¸‚à¸µà¸¢à¸™à¸­à¹ˆà¸²à¸™à¸‚à¹‰à¸²à¸¡ core
 static uint32_t massageSeconds = 0;
 
 // --- start countdown ---
@@ -50,12 +55,15 @@ static uint32_t machineRemainingSec = 0;
 static TickType_t machineLastTick = 0;
 static bool machineCountdownActive = false;
 
-// --- global functions ---
+// ===========================================================
+// ##### Forward Declarations #####
+// ===========================================================
+static void mainTask(void *arg);
+
 static void onCreditDetected();
 static void onCreditComplete(uint32_t bill);
 static void onCreditRejected(uint32_t pulse);
 
-static void mainTask(void *arg);
 static void convertBahtToMassageSec(uint32_t baht);
 static uint32_t getMassageTime();
 static uint32_t addMassageTime(uint32_t sec);
@@ -104,6 +112,12 @@ void setup()
     log("-- setup completed --");
 }
 
+void loop()
+{
+    // do Nothing
+    wait(1000);
+}
+
 // ===========================================================
 // ##### Main Task #####
 // ===========================================================
@@ -115,6 +129,7 @@ static void mainTask(void *arg)
     {
         TickType_t now = xTaskGetTickCount();
         STATE state = getState();
+
         switch (state)
         {
         case RESET:
@@ -130,7 +145,6 @@ static void mainTask(void *arg)
             nk77::setInhibit(false); // reset inhibit to allow credit
             LCD::print(MACHINE_NAME, 0);
             LCD::print(" Insert Credit. ", 1);
-
             break;
         case START:
         {
@@ -148,7 +162,6 @@ static void mainTask(void *arg)
                 startLastTick += ONE_SEC_TICKS;
                 if (startRemainingSec > 0)
                 {
-                    // countdown to massage
                     startRemainingSec--;
                     log("Start remaining: %lu sec", static_cast<unsigned long>(startRemainingSec));
                     LCD::printTimeLabel("Start:", startRemainingSec, 1);
@@ -168,7 +181,6 @@ static void mainTask(void *arg)
             break;
         }
         case MASSAGE:
-            // LCD update massage time
             LCD::print(MACHINE_NAME, 0);
             LCD::printTime(getMassageTime(), 1);
 
@@ -187,6 +199,7 @@ static void mainTask(void *arg)
                 if (machineRemainingSec > 0)
                 {
                     machineRemainingSec--;
+                    // When machine time reaches 30 min and user still has >= 30 min, add 10 min.
                     if (machineRemainingSec == MACHINE_ADD_THRESHOLD_SEC &&
                         getMassageTime() >= MACHINE_ADD_THRESHOLD_SEC)
                     {
@@ -196,7 +209,6 @@ static void mainTask(void *arg)
                     }
                 }
             }
-
             break;
         case END:
             log("Massage Ended");
@@ -209,12 +221,6 @@ static void mainTask(void *arg)
 
         wait(20)
     }
-}
-
-void loop()
-{
-    // do Nothing
-    wait(1000);
 }
 
 static void onCreditDetected()
@@ -244,6 +250,7 @@ static void onCreditRejected(uint32_t pulse)
 
 static void convertBahtToMassageSec(uint32_t baht)
 {
+    // minPerBaht is minutes per baht
     uint32_t sec = (baht / minPerBaht) * 60U;
     addMassageTime(sec);
     log("Added massage time: %lu sec", static_cast<unsigned long>(sec));
@@ -265,6 +272,7 @@ static uint32_t addMassageTime(uint32_t sec)
 
     if (sec > 0)
     {
+        // protect shared state on multi-core
         portENTER_CRITICAL(&massageMux);
         massageSeconds += sec;
         _massageSeconds = massageSeconds;
@@ -275,7 +283,6 @@ static uint32_t addMassageTime(uint32_t sec)
         portEXIT_CRITICAL(&massageMux);
     }
 
-    // return remaining time
     return _massageSeconds;
 }
 
@@ -292,7 +299,6 @@ static uint32_t decMassageTime()
     }
     portEXIT_CRITICAL(&massageMux);
 
-    // return remaining time
     return _massageSeconds;
 }
 
