@@ -266,7 +266,8 @@ static void mainTask(void *arg)
         case END:
             log("Massage Ended");
             LCD::print("   Thank You!  ", 1);
-
+            wait(2000);
+            
             lockRemote();
             m_end();
             unlockRemote();
