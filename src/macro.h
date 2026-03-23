@@ -34,9 +34,10 @@ void m_hardreset()
     remote.wait(2000);       // รอ remote ทำงาน
 
     remote.swOn();      // power On
-    remote.wait(30000); // รอเก้าอี้กลับสู่ท่านั่ง
 
+    remote.wait(10000); // รอเก้าอี้กลับสู่ท่านั่ง
     m_disableVoiceCMD(); // ปิดคำสั่งเสียง
+    remote.wait(5000);  // รอเก้าอี้กลับสู่ท่านั่ง
 
     // ทดลองปิดเสียงระหว่างรอเก้่าอีลง ลดเวลา delay
     // click(on);   // power On
@@ -44,7 +45,7 @@ void m_hardreset()
     // remote.wait(15000); // รอเก้าอี้กลับสู่ท่านั่ง
 
     remote.swOn(); // power Off
-    remote.wait(5000);
+    // remote.wait(5000);
     remote.setAcPower(false); // ตัดไฟ
 
     log("MACRO: HARD RESET >> Success!");
@@ -55,7 +56,9 @@ void m_start(uint8_t mode)
     // กระบวนการนี้ใช้เวลาประมาณ 72วินาที++
 
     log("MACRO: START");
-
+    remote.setAcPower(true); // จ่ายไฟ
+    // remote.wait(2000);
+    remote.swOn(); // power On
     // --- ย้ายไป ช่วงก่อน start เพิ่ม UX ที่ดี ---
     // setAcPower(true);
     // remote.wait(1000);
@@ -67,10 +70,10 @@ void m_start(uint8_t mode)
     remote.swDown(mode); // select mode
     remote.swOk();
 
-    remote.wait(30000); // รอเครื่องทำขั้นตอน body-scan 30วินาที
+    remote.wait(15000); // รอเครื่องทำขั้นตอน body-scan 30วินาที
     remote.swOk();      // skip
 
-    m_setMassageSTR();
+    // m_setMassageSTR();
     m_setBalloonSTR();
 
     // Add Machine Massage times
@@ -129,7 +132,7 @@ void m_setMassageSTR()
 {
     // กระบวนการนี้ใช้เวลาประมาณ 10.5วินาที
     remote.swOk();
-    remote.swDown();
+    // remote.swDown();
     remote.swRight();
     remote.swOk();
     m_home();

@@ -154,7 +154,7 @@ void nk77::init(const InitConfig &cfg)
     xTaskCreatePinnedToCore(
         pulseTask,
         "nk77Pulse",
-        4096,
+        8000,
         nullptr,
         10,
         nullptr,

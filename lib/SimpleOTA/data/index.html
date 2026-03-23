@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimpleOTA</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="freezeOverlay" class="freeze-overlay">
+      <div class="loader-content">
+        <div class="circular-progress">
+          <svg viewBox="0 0 100 100">
+            <circle class="bg" cx="50" cy="50" r="45"></circle>
+            <circle
+              class="fg"
+              cx="50"
+              cy="50"
+              r="45"
+              id="overlayProgressCircle"
+            ></circle>
+          </svg>
+          <div id="freezeProgress" class="percentage">0%</div>
+        </div>
+        <p id="freezeText">Updating...</p>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <div id="statusMessage" class="message"></div>
+
+      <header class="header">
+        <h1>SimpleOTA</h1>
+        <p>Device Management Dashboard</p>
+      </header>
+
+      <div class="card">
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="currentVersion">0.0.0</div>
+            <div class="stat-label">Version</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="deviceName">...</div>
+            <div class="stat-label">Device ID</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="freeSpace">...</div>
+            <div class="stat-label">Free Space</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Local Update</div>
+        <form id="otaForm">
+          <div class="field">
+            <div class="input-group">
+              <input
+                type="text"
+                id="fileName"
+                placeholder="Select firmware..."
+                readonly
+              />
+              <button
+                class="btn"
+                type="button"
+                id="browseBtn"
+                onclick="document.getElementById('fileInput').click()"
+              >
+                Browse
+              </button>
+            </div>
+            <input
+              type="file"
+              id="fileInput"
+              name="firmware"
+              accept=".bin"
+              style="display: none"
+            />
+          </div>
+
+          <button
+            class="btn btn-primary btn-fluid"
+            type="submit"
+            id="updateBtn"
+          >
+            Update Firmware
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Configurations</div>
+        <form id="configForm">
+          <div class="field">
+            <label>Manifest URL</label>
+            <div class="input-group">
+              <input type="text" id="manifestUrl" placeholder="https://..." />
+              <button class="btn btn-primary" type="button" id="cloudUpdateBtn">
+                Update Now
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Check Interval (Hours)</label>
+            <input type="number" id="checkInterval" placeholder="1" />
+          </div>
+          <div class="field">
+            <label>Device ID</label>
+            <input type="text" id="deviceID" placeholder="ESP32-Device" />
+          </div>
+
+          <button class="btn btn-fluid" type="submit" id="saveConfigBtn">
+            Save Settings
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recovery</div>
+        <button
+          class="btn btn-outline-danger btn-fluid"
+          type="button"
+          id="rollbackBtn"
+        >
+          Rollback Firmware
+        </button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

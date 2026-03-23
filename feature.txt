@@ -1,0 +1,1 @@
+startRemainingSec = START_COUNTDOWN_SEC ต่อเวลานับถอยหลังเมื่อใส่แบงค์เพิ่ม ให้เริ่มนับ ถอยหลังใหม่
