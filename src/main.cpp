@@ -40,8 +40,6 @@ static const uint32_t MACHINE_START_SEC = 40U * 60U;         // เวลาเ�
 static const uint32_t MACHINE_ADD_THRESHOLD_SEC = 30U * 60U; // เมื่อเวลาเครื่องเหลือ 29 นาที
 static const uint32_t MACHINE_ADD_SEC = 10U * 60U;           // เพิ่มเวลาเครื่องครั้งละ 10 นาที
 
-
-
 // ===========================================================
 // ##### State Machine #####
 // ===========================================================
@@ -79,6 +77,7 @@ static void mainTask(void *arg);
 static void addMachineTime(uint8_t times);
 static void lockRemote();
 static void unlockRemote();
+static void resetToIdle();
 
 static void onCreditDetected();
 static void onCreditComplete(uint32_t bill);
@@ -183,7 +182,7 @@ static void mainTask(void *arg)
         switch (state)
         {
         case RESET:
-        nk77::setInhibit(true); // block credit during reset
+            nk77::setInhibit(true); // block credit during reset
             log("System Resetting...");
             LCD::print(VERSION, 0);
             LCD::print("System Resetting", 1);
@@ -192,12 +191,10 @@ static void mainTask(void *arg)
             m_hardreset();
             unlockRemote();
             log("System Idle");
-            setState(IDLE);
+            resetToIdle();
             break;
         case IDLE:
-            nk77::setInhibit(false); // reset inhibit to allow credit
-            LCD::print(MACHINE_NAME, 0);
-            LCD::print(" Insert Credit. ", 1);
+
             break;
         case START:
         {
@@ -273,7 +270,7 @@ static void mainTask(void *arg)
             lockRemote();
             m_end();
             unlockRemote();
-            setState(IDLE);
+            resetToIdle();
             break;
         }
 
@@ -477,4 +474,23 @@ static void setState(STATE state)
     portENTER_CRITICAL(&massageMux);
     currentState = state;
     portEXIT_CRITICAL(&massageMux);
+}
+
+static void resetToIdle()
+{
+    // Reset shared state for a clean new session.
+    portENTER_CRITICAL(&massageMux);
+    massageSeconds = 0;
+    startRemainingSec = 0;
+    startInit = false;
+    machineRemainingSec = 0;
+    machineLastTick = 0;
+    machineCountdownActive = false;
+    summaryCredit = 0;
+    portEXIT_CRITICAL(&massageMux);
+
+    nk77::setInhibit(false);
+    LCD::print(MACHINE_NAME, 0);
+    LCD::print(" Insert Credit. ", 1);
+    setState(IDLE);
 }
