@@ -78,6 +78,7 @@ static void addMachineTime(uint8_t times);
 static void lockRemote();
 static void unlockRemote();
 static void resetToIdle();
+static void setBacklight(bool on);
 
 static void onCreditDetected();
 static void onCreditComplete(uint32_t bill);
@@ -182,6 +183,7 @@ static void mainTask(void *arg)
         switch (state)
         {
         case RESET:
+            // setBacklight(true);
             nk77::setInhibit(true); // block credit during reset
             log("System Resetting...");
             LCD::print(VERSION, 0);
@@ -198,6 +200,7 @@ static void mainTask(void *arg)
             break;
         case START:
         {
+            // setBacklight(true);
 
             if (!startInit)
             {
@@ -234,6 +237,7 @@ static void mainTask(void *arg)
             break;
         }
         case MASSAGE:
+            // setBacklight(true);
             LCD::print(MACHINE_NAME, 0);
             LCD::printTime(getMassageTime(), 1);
 
@@ -264,6 +268,7 @@ static void mainTask(void *arg)
             }
             break;
         case END:
+            // setBacklight(true);
             log("Massage Ended");
             LCD::print("   Thank You!  ", 1);
             wait(2000);
@@ -491,7 +496,20 @@ static void resetToIdle()
     portEXIT_CRITICAL(&massageMux);
 
     nk77::setInhibit(false);
+    // setBacklight(false);
     LCD::print(MACHINE_NAME, 0);
     LCD::print(" Insert Credit. ", 1);
     setState(IDLE);
+}
+
+static void setBacklight(bool on)
+{
+    if (on)
+    {
+        lcd.backlight();
+    }
+    else
+    {
+        lcd.noBacklight();
+    }
 }
