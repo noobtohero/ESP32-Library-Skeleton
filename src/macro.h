@@ -29,15 +29,16 @@ void m_hardreset()
     // กระบวนการนี้ใช้เวลาประมาณ 50วินาที
 
     log("MACRO: HARD RESET");
+    remote.swOk(); // เอาไว้เทสว่า remote ยัง responsive อยู่ไหม ถ้าไม่มีก็แสดงว่าสายหลวม
 
     remote.setAcPower(true); // จ่ายไฟ
     remote.wait(2000);       // รอ remote ทำงาน
 
-    remote.swOn();      // power On
+    remote.swOn(); // power On
 
-    remote.wait(10000); // รอเก้าอี้กลับสู่ท่านั่ง
+    remote.wait(10000);  // รอเก้าอี้กลับสู่ท่านั่ง
     m_disableVoiceCMD(); // ปิดคำสั่งเสียง
-    remote.wait(5000);  // รอเก้าอี้กลับสู่ท่านั่ง
+    remote.wait(5000);   // รอเก้าอี้กลับสู่ท่านั่ง
 
     // ทดลองปิดเสียงระหว่างรอเก้่าอีลง ลดเวลา delay
     // click(on);   // power On

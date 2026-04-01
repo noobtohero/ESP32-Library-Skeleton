@@ -143,6 +143,8 @@ void setup()
     // setup Remote
     m_remote_init();
     acPower(false);
+
+    
     remoteMutex = xSemaphoreCreateMutex();
 
     setState(RESET);
