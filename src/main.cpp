@@ -22,8 +22,8 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD I2C address
 #define multiplyBill true // true = accept multiple bills, false = single bill only
 #define MACHINE_NAME "  WIWA MASSAGE  "
 #define VERSION "2.0.1"
-#define MASSAGE_MODE 2
-#define MAXIMUM_CREDIT 120 // maximum credit in baht
+#define MASSAGE_MODE 1
+#define MAXIMUM_CREDIT 120 // maximum 3credit in baht
 // ===========================================================
 
 // ##### WiFi Settings #####
